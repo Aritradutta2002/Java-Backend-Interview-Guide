@@ -133,7 +133,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://id.example.com/realms/app     # discovery + JWKS
-          audiences: orders-api                              # reject tokens minted for other APIs
+          audiences: orders-api          # reject tokens minted for other APIs (property available
+                                         # in recent Boot 3.x; see Q169 for the programmatic equivalent)
 ```
 
 ```java

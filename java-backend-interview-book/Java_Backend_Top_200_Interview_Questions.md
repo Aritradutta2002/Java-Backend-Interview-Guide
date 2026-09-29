@@ -433,7 +433,7 @@ try {
 **Priority:** Must Know  
 **Why interviewers ask it:** Consistent error responses are a visible sign of API maturity, and the layering is easy to get wrong.
 
-**Interview-ready answer:** I throw meaningful domain exceptions where the problem is detected, and translate them to HTTP in exactly one place — a `@RestControllerAdvice` with `@ExceptionHandler` methods. Controllers do not contain try/catch for business failures, and services do not know about status codes. The advice maps each exception type to a status and builds a consistent body; in Spring 6 I use `ProblemDetail`, which is the RFC 7807 format, with a stable machine-readable code, a human-readable message, and a correlation ID so support can find the request in the logs. Validation failures produce per-field errors. Unexpected exceptions get a 500 with a generic message — logged in full server-side, with no stack trace or internal detail in the response.
+**Interview-ready answer:** I throw meaningful domain exceptions where the problem is detected, and translate them to HTTP in exactly one place — a `@RestControllerAdvice` with `@ExceptionHandler` methods. Controllers do not contain try/catch for business failures, and services do not know about status codes. The advice maps each exception type to a status and builds a consistent body; in Spring 6 I use `ProblemDetail`, the standard problem-details format (RFC 7807, updated by RFC 9457), with a stable machine-readable code, a human-readable message, and a correlation ID so support can find the request in the logs. Validation failures produce per-field errors. Unexpected exceptions get a 500 with a generic message — logged in full server-side, with no stack trace or internal detail in the response.
 
 **In-depth explanation:** Order of specificity matters: Spring picks the most specific handler, so a broad `Exception` handler is a safety net, not the main path. Log levels should differ by class of failure — client errors at debug or info, dependency failures at warn, unexpected errors at error with the stack trace — otherwise your error dashboard is dominated by users typing bad input. Some failures never reach `@ExceptionHandler`: anything thrown in a filter or during security processing is handled by the filter chain, so authentication and authorization errors need their own entry points to produce the same body shape. Keep the error contract documented and stable; clients branch on it, so changing a code is a breaking change.
 
@@ -479,7 +479,7 @@ public class ApiExceptionHandler {
 
 **Production perspective:** A stable error contract with codes and correlation IDs is what makes support tractable: a customer quotes an ID, you find the exact request. Without it, every investigation starts with a timestamp and a guess.
 
-**Related concepts covered:** ProblemDetail and RFC 7807, `@RestControllerAdvice`, validation errors, correlation IDs, log-level discipline, information disclosure.
+**Related concepts covered:** ProblemDetail (RFC 7807, updated by RFC 9457), `@RestControllerAdvice`, validation errors, correlation IDs, log-level discipline, information disclosure.
 
 ## Q010. How does try-with-resources work and what happens with suppressed exceptions?
 
@@ -3267,7 +3267,7 @@ class ApiExceptionHandler {
         problem.setTitle("Validation failed");
         problem.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (a, b) -> a)));
-        return problem;                                   // RFC 7807 response body
+        return problem;                                   // problem-details body (RFC 9457)
     }
 }
 ```
@@ -5634,7 +5634,7 @@ PUT    /api/orders/{orderId}/shipping-address                    replace a compo
 **Priority:** Must Know  
 **Why interviewers ask it:** Error design is where APIs most often become inconsistent, and clients suffer for years afterwards.
 
-**Interview-ready answer:** One error shape for the whole API. In Spring Boot 3 I use `ProblemDetail` (RFC 7807), which gives `type`, `title`, `status`, `detail` and `instance`, and I add a machine-readable error code, a list of field errors for validation failures, and a correlation ID for support. Clients should branch on the status code and the stable error code, never on prose. Messages must be safe: no stack traces, no SQL, no internal hostnames, and no echoing of sensitive input values. Validation failures return 400 with every field error listed at once, so a form can display them all rather than one per round trip.
+**Interview-ready answer:** One error shape for the whole API. In Spring Boot 3 I use `ProblemDetail`, the standard problem-details format defined by RFC 7807 and updated by RFC 9457, which gives `type`, `title`, `status`, `detail` and `instance`, and I add a machine-readable error code, a list of field errors for validation failures, and a correlation ID for support. Clients should branch on the status code and the stable error code, never on prose. Messages must be safe: no stack traces, no SQL, no internal hostnames, and no echoing of sensitive input values. Validation failures return 400 with every field error listed at once, so a form can display them all rather than one per round trip.
 
 **In-depth explanation:** A stable `code` field matters because `title` and `detail` are human text that may be reworded or localised. Locale handling belongs in the client where possible; if the server localises, it should still keep the code stable. Distinguish client-visible detail from internal detail: log the exception with full context and the correlation ID, then return a short safe message with that same ID. For bulk operations, decide and document whether the response is all-or-nothing or a per-item result list — 207-style multi-status semantics need explicit design. Finally, version the error contract alongside the API: adding a field is safe, changing the meaning of `code` values is not.
 
@@ -5674,7 +5674,7 @@ ProblemDetail onUnexpected(Exception ex) {
 
 **Production perspective:** A correlation ID that appears in the response, the logs and the trace turns a vague user complaint into a two-minute investigation. Make it mandatory in every error path, including the security filter chain.
 
-**Related concepts covered:** RFC 7807 ProblemDetail, error codes, correlation IDs, information disclosure, bulk operation semantics.
+**Related concepts covered:** ProblemDetail (RFC 7807, updated by RFC 9457), error codes, correlation IDs, information disclosure, bulk operation semantics.
 
 ## Q140. How would you implement pagination, filtering and stable sorting?
 
@@ -6696,7 +6696,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://id.example.com/realms/app     # discovery + JWKS
-          audiences: orders-api                              # reject tokens minted for other APIs
+          audiences: orders-api          # reject tokens minted for other APIs (property available
+                                         # in recent Boot 3.x; see Q169 for the programmatic equivalent)
 ```
 
 ```java
@@ -7226,7 +7227,7 @@ class OrderRepositoryTest {
 @WebMvcTest(OrderController.class)
 class OrderControllerContractTest {
     @Autowired MockMvc mvc;
-    @MockitoBean OrderService orderService;
+    @MockitoBean OrderService orderService;          // Boot 3.4+; @MockBean in earlier versions
 
     @Test void anonymousIsRejected() throws Exception {
         mvc.perform(get("/api/orders/{id}", UUID.randomUUID()))
@@ -7858,7 +7859,7 @@ public void relay() {
 
 **Interview-ready answer:** Decide which ordering you actually need. Global ordering across a topic is usually unnecessary and very expensive — it requires a single partition. What matters is ordering per entity, and you get that by using the entity ID as the partition key, so all its events go to the same partition and are consumed in sequence. Beyond that, make consumers robust to out-of-order arrival: include a version or timestamp in the event and ignore anything older than what you have already applied. That defends against redelivery, retries that reorder, and producers racing each other. In short: key for the ordering you need, and design the consumer so that ordering is an optimisation rather than a correctness requirement.
 
-**In-depth explanation:** Several mechanisms break ordering even with correct keying. Non-blocking retries move a failed record to a delay topic while later records proceed. Multi-threaded consumption within a partition reorders unless you partition the work by key again in the consumer. Producer retries with `max.in.flight.requests.per.connection` above 1 can reorder on retry unless idempotent production is enabled (`enable.idempotence=true`, which is the default in recent clients and keeps ordering with up to five in-flight requests). Repartitioning changes key placement, so events for one key can briefly exist in two partitions. The monotonic guard — `UPDATE ... WHERE version < :version` — covers all of these cases with one mechanism, and it composes with idempotent consumption.
+**In-depth explanation:** Several mechanisms break ordering even with correct keying. Non-blocking retries move a failed record to a delay topic while later records proceed. Multi-threaded consumption within a partition reorders unless you partition the work by key again in the consumer. Producer retries with `max.in.flight.requests.per.connection` above 1 can reorder on retry unless idempotent production is enabled (`enable.idempotence=true`, the default since the 3.0 clients, which preserves ordering with up to five in-flight requests). Repartitioning changes key placement, so events for one key can briefly exist in two partitions. The monotonic guard — `UPDATE ... WHERE version < :version` — covers all of these cases with one mechanism, and it composes with idempotent consumption.
 
 **Practical backend example:** Keyed production plus a version guard in the consumer:
 
@@ -8670,7 +8671,7 @@ Short definitions for terms used across the book. Where a term is version-depend
 **Eventual consistency:** A model where replicas or projections converge after a delay rather than updating atomically.  
 **Idempotency:** Repeating an operation has the same effect as performing it once. A property of the implementation, not only of the HTTP method.  
 **Idempotency key:** A client-supplied identifier stored server-side so a retried request returns the original outcome instead of creating a duplicate.  
-**Problem Detail:** The RFC 7807 JSON error format, available in Spring 6 as `ProblemDetail`.  
+**Problem Detail:** The standard JSON error format for HTTP APIs, defined by RFC 7807 and updated by RFC 9457, available in Spring 6 as `ProblemDetail`.  
 **Retry budget:** A cap on the proportion of traffic that may be retries, preventing retry storms during an outage.  
 **Safe method:** An HTTP method with no intended side effects — GET, HEAD, OPTIONS.  
 **Trace context:** The W3C `traceparent` header propagating trace and span identifiers across services.

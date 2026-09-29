@@ -339,7 +339,7 @@ try {
 **Priority:** Must Know  
 **Why interviewers ask it:** Consistent error responses are a visible sign of API maturity, and the layering is easy to get wrong.
 
-**Interview-ready answer:** I throw meaningful domain exceptions where the problem is detected, and translate them to HTTP in exactly one place — a `@RestControllerAdvice` with `@ExceptionHandler` methods. Controllers do not contain try/catch for business failures, and services do not know about status codes. The advice maps each exception type to a status and builds a consistent body; in Spring 6 I use `ProblemDetail`, which is the RFC 7807 format, with a stable machine-readable code, a human-readable message, and a correlation ID so support can find the request in the logs. Validation failures produce per-field errors. Unexpected exceptions get a 500 with a generic message — logged in full server-side, with no stack trace or internal detail in the response.
+**Interview-ready answer:** I throw meaningful domain exceptions where the problem is detected, and translate them to HTTP in exactly one place — a `@RestControllerAdvice` with `@ExceptionHandler` methods. Controllers do not contain try/catch for business failures, and services do not know about status codes. The advice maps each exception type to a status and builds a consistent body; in Spring 6 I use `ProblemDetail`, the standard problem-details format (RFC 7807, updated by RFC 9457), with a stable machine-readable code, a human-readable message, and a correlation ID so support can find the request in the logs. Validation failures produce per-field errors. Unexpected exceptions get a 500 with a generic message — logged in full server-side, with no stack trace or internal detail in the response.
 
 **In-depth explanation:** Order of specificity matters: Spring picks the most specific handler, so a broad `Exception` handler is a safety net, not the main path. Log levels should differ by class of failure — client errors at debug or info, dependency failures at warn, unexpected errors at error with the stack trace — otherwise your error dashboard is dominated by users typing bad input. Some failures never reach `@ExceptionHandler`: anything thrown in a filter or during security processing is handled by the filter chain, so authentication and authorization errors need their own entry points to produce the same body shape. Keep the error contract documented and stable; clients branch on it, so changing a code is a breaking change.
 
@@ -385,7 +385,7 @@ public class ApiExceptionHandler {
 
 **Production perspective:** A stable error contract with codes and correlation IDs is what makes support tractable: a customer quotes an ID, you find the exact request. Without it, every investigation starts with a timestamp and a guess.
 
-**Related concepts covered:** ProblemDetail and RFC 7807, `@RestControllerAdvice`, validation errors, correlation IDs, log-level discipline, information disclosure.
+**Related concepts covered:** ProblemDetail (RFC 7807, updated by RFC 9457), `@RestControllerAdvice`, validation errors, correlation IDs, log-level discipline, information disclosure.
 
 ## Q010. How does try-with-resources work and what happens with suppressed exceptions?
 

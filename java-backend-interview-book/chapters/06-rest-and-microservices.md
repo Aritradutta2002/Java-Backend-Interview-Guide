@@ -131,7 +131,7 @@ PUT    /api/orders/{orderId}/shipping-address                    replace a compo
 **Priority:** Must Know  
 **Why interviewers ask it:** Error design is where APIs most often become inconsistent, and clients suffer for years afterwards.
 
-**Interview-ready answer:** One error shape for the whole API. In Spring Boot 3 I use `ProblemDetail` (RFC 7807), which gives `type`, `title`, `status`, `detail` and `instance`, and I add a machine-readable error code, a list of field errors for validation failures, and a correlation ID for support. Clients should branch on the status code and the stable error code, never on prose. Messages must be safe: no stack traces, no SQL, no internal hostnames, and no echoing of sensitive input values. Validation failures return 400 with every field error listed at once, so a form can display them all rather than one per round trip.
+**Interview-ready answer:** One error shape for the whole API. In Spring Boot 3 I use `ProblemDetail`, the standard problem-details format defined by RFC 7807 and updated by RFC 9457, which gives `type`, `title`, `status`, `detail` and `instance`, and I add a machine-readable error code, a list of field errors for validation failures, and a correlation ID for support. Clients should branch on the status code and the stable error code, never on prose. Messages must be safe: no stack traces, no SQL, no internal hostnames, and no echoing of sensitive input values. Validation failures return 400 with every field error listed at once, so a form can display them all rather than one per round trip.
 
 **In-depth explanation:** A stable `code` field matters because `title` and `detail` are human text that may be reworded or localised. Locale handling belongs in the client where possible; if the server localises, it should still keep the code stable. Distinguish client-visible detail from internal detail: log the exception with full context and the correlation ID, then return a short safe message with that same ID. For bulk operations, decide and document whether the response is all-or-nothing or a per-item result list — 207-style multi-status semantics need explicit design. Finally, version the error contract alongside the API: adding a field is safe, changing the meaning of `code` values is not.
 
@@ -171,7 +171,7 @@ ProblemDetail onUnexpected(Exception ex) {
 
 **Production perspective:** A correlation ID that appears in the response, the logs and the trace turns a vague user complaint into a two-minute investigation. Make it mandatory in every error path, including the security filter chain.
 
-**Related concepts covered:** RFC 7807 ProblemDetail, error codes, correlation IDs, information disclosure, bulk operation semantics.
+**Related concepts covered:** ProblemDetail (RFC 7807, updated by RFC 9457), error codes, correlation IDs, information disclosure, bulk operation semantics.
 
 ## Q140. How would you implement pagination, filtering and stable sorting?
 

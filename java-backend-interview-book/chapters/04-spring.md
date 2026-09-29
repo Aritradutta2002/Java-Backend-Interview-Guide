@@ -263,7 +263,7 @@ class ApiExceptionHandler {
         problem.setTitle("Validation failed");
         problem.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (a, b) -> a)));
-        return problem;                                   // RFC 7807 response body
+        return problem;                                   // problem-details body (RFC 9457)
     }
 }
 ```

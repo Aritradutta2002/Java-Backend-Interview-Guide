@@ -169,7 +169,7 @@ class OrderRepositoryTest {
 @WebMvcTest(OrderController.class)
 class OrderControllerContractTest {
     @Autowired MockMvc mvc;
-    @MockitoBean OrderService orderService;
+    @MockitoBean OrderService orderService;          // Boot 3.4+; @MockBean in earlier versions
 
     @Test void anonymousIsRejected() throws Exception {
         mvc.perform(get("/api/orders/{id}", UUID.randomUUID()))

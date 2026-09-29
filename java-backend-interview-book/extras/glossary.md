@@ -82,7 +82,7 @@ Short definitions for terms used across the book. Where a term is version-depend
 **Eventual consistency:** A model where replicas or projections converge after a delay rather than updating atomically.  
 **Idempotency:** Repeating an operation has the same effect as performing it once. A property of the implementation, not only of the HTTP method.  
 **Idempotency key:** A client-supplied identifier stored server-side so a retried request returns the original outcome instead of creating a duplicate.  
-**Problem Detail:** The RFC 7807 JSON error format, available in Spring 6 as `ProblemDetail`.  
+**Problem Detail:** The standard JSON error format for HTTP APIs, defined by RFC 7807 and updated by RFC 9457, available in Spring 6 as `ProblemDetail`.  
 **Retry budget:** A cap on the proportion of traffic that may be retries, preventing retry storms during an outage.  
 **Safe method:** An HTTP method with no intended side effects — GET, HEAD, OPTIONS.  
 **Trace context:** The W3C `traceparent` header propagating trace and span identifiers across services.

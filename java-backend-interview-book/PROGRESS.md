@@ -22,7 +22,7 @@ python3 java-backend-interview-book/scripts/validate.py
 
 .venv/bin/python java-backend-interview-book/scripts/verify_pdf.py
   checks=20  failures=0                                    RESULT: PASSED
-  214 pages, 936,366 bytes, 258 outline bookmarks, 434 link annotations
+  214 pages, 936,589 bytes, 258 outline bookmarks, 434 link annotations
 ```
 
 ## If you extend or edit the book

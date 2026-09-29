@@ -96,7 +96,7 @@ Current status of both, on the committed sources:
 ```text
 validate.py   mode=full  questions_written=200  warnings=0  errors=0   RESULT: PASSED
 verify_pdf.py checks=20  failures=0                                    RESULT: PASSED
-              214 pages, 936,366 bytes, 258 bookmarks, 434 link annotations
+              214 pages, 936,589 bytes, 258 bookmarks, 434 link annotations
 ```
 
 ## Editing
