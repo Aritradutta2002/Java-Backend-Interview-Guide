@@ -1,0 +1,4 @@
+# Python build environment for the PDF toolchain
+.venv/
+__pycache__/
+*.pyc
