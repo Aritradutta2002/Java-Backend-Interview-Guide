@@ -1,5 +1,0 @@
-# Progress checkpoint
-
-Last fully written chapter: **Chapter 1, Q001-Q030**.
-
-Master selection plan: Q001-Q200 drafted. Chapter 1 contains all nine labeled answer sections plus the question title and two follow-ups per entry. Manual structural checks found 200 plan rows, 30 chapter headings and 30 of each required label. The standalone Node validator has not been executed in this environment. The four extras are drafted, but references to later questions are only plan references. Resume with `chapters/02-collections-and-streams.md`, Q031-Q050; then continue one chapter at a time in plan order. After each chapter run `node java-backend-interview-book/scripts/validate.mjs --allow-partial` and review explanations, examples, count and overlap. When all chapters are complete, run full validation, build the PDF, and verify it opens and contains Q001 and Q200. No final PDF has been built or verified.
