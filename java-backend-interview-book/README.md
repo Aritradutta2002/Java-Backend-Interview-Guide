@@ -10,10 +10,11 @@ A complete, self-contained interview-preparation book for backend developers wit
 |---|---|
 | [`Java_Backend_Top_200_Interview_Questions.pdf`](Java_Backend_Top_200_Interview_Questions.pdf) | The book: 214 pages, title page, clickable contents, PDF bookmarks, page numbers. |
 | [`Java_Backend_Top_200_Interview_Questions.md`](Java_Backend_Top_200_Interview_Questions.md) | The same content as one Markdown file (generated — do not edit by hand). |
+| [`Java_Backend_Top_40_Cheat_Sheet.pdf`](Java_Backend_Top_40_Cheat_Sheet.pdf) | Companion one-page revision sheet: the 40 priority questions, one answer kernel each. |
 | [`chapters/`](chapters) | Ten chapter sources, one file per chapter. **Edit these.** |
-| [`extras/`](extras) | Top 40, how to use the book, 7-day plan, mini-exercises, glossary, coverage checklist. |
+| [`extras/`](extras) | Top 40, how to use the book, 7-day plan, mini-exercises, glossary, coverage checklist, cheat-sheet source. |
 | [`question-plan.md`](question-plan.md) | The master plan: 200 rows with ID, title, priority, concepts, likely follow-up and rationale. |
-| [`scripts/`](scripts) | Validation and build scripts (`validate.py`, `build_book.py`, `build_pdf.py`, `verify_pdf.py`). |
+| [`scripts/`](scripts) | Validation and build scripts (`validate.py`, `build_book.py`, `build_pdf.py`, `verify_pdf.py`, `build_cheatsheet.py`). |
 
 ## Contents at a glance
 
@@ -59,6 +60,23 @@ python3 java-backend-interview-book/scripts/build_book.py && \
 ```
 
 `validate.py` and `build_book.py` use only the Python standard library; `build_pdf.py` needs **reportlab** and `verify_pdf.py` needs **pypdf**.
+
+### Rebuilding the one-page cheat sheet
+
+The cheat sheet is a separate deliverable with its own source and its own build; it is deliberately not part of the manuscript, so rebuilding it never changes the book:
+
+```bash
+.venv/bin/python java-backend-interview-book/scripts/build_cheatsheet.py
+```
+
+It renders [`extras/cheat-sheet.md`](extras/cheat-sheet.md) as a two-column A4 page, then reads the PDF back and fails if the sheet and `extras/top-40.md` disagree about which 40 questions are on it. Expected output:
+
+```text
+wrote java-backend-interview-book/Java_Backend_Top_40_Cheat_Sheet.pdf
+  entries=40 bytes=8,531
+  pages=1 ids_matched=40/40
+  RESULT: PASSED
+```
 
 ### Why ReportLab rather than Pandoc
 

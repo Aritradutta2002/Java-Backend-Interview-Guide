@@ -4,6 +4,7 @@ This repository contains **[Top 200 Java Backend Developer Interview Questions a
 
 - 📕 **Read the PDF:** [`java-backend-interview-book/Java_Backend_Top_200_Interview_Questions.pdf`](java-backend-interview-book/Java_Backend_Top_200_Interview_Questions.pdf) (214 pages, clickable contents, bookmarks, page numbers)
 - 📝 **Read in Markdown:** [`java-backend-interview-book/Java_Backend_Top_200_Interview_Questions.md`](java-backend-interview-book/Java_Backend_Top_200_Interview_Questions.md), or chapter by chapter under [`java-backend-interview-book/chapters/`](java-backend-interview-book/chapters)
+- 🗂 **Revise fast:** [`java-backend-interview-book/Java_Backend_Top_40_Cheat_Sheet.pdf`](java-backend-interview-book/Java_Backend_Top_40_Cheat_Sheet.pdf) — one printable page covering the 40 priority questions
 - 🛠 **Build, validate and edit:** see [`java-backend-interview-book/README.md`](java-backend-interview-book/README.md)
 
 ## What is inside
