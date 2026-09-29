@@ -6696,7 +6696,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://id.example.com/realms/app     # discovery + JWKS
-          # 'audiences' (recent Boot 3.x) rejects tokens minted for other APIs;
+          # 'audiences' (Boot 2.7+) rejects tokens minted for other APIs;
           # see Q169 for the programmatic AudienceValidator equivalent
           audiences: orders-api
 ```
