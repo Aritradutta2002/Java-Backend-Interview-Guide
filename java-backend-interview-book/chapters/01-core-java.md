@@ -976,7 +976,7 @@ String describe(PaymentResult result) {
 **Priority:** Important  
 **Why interviewers ask it:** Version precision matters when a team is migrating, and vague answers signal second-hand knowledge.
 
-**Interview-ready answer:** Switch expressions with arrow labels and `yield` are standard from Java 14, so they are fully available in 17: they return a value, do not fall through, and must be exhaustive for enums and sealed types. Pattern matching for `instanceof` is also standard in 16, so `if (o instanceof Order order)` binds the variable directly. What changed in Java 21 is that pattern matching for `switch` became standard — matching on type patterns with guards (`case Order o when o.total().isPositive()`) — along with record patterns for destructuring, both of which were previews in 17. So in a Java 17 codebase I use switch expressions and `instanceof` patterns freely, but type patterns in `switch` require preview flags; on 21 I can use the full set.
+**Interview-ready answer:** Switch expressions with arrow labels and `yield` are standard from Java 14, so they are fully available in 17: they return a value, do not fall through, and must be exhaustive for enums and sealed types. Pattern matching for `instanceof` is also standard in 16, so `if (o instanceof Order order)` binds the variable directly. What changed in Java 21 is that pattern matching for `switch` became standard — matching on type patterns with guards (`case Order o when o.total().isPositive()`) — along with record patterns for destructuring. The two had different timelines: pattern matching for `switch` first previewed in 17, record patterns only from 19, and both were finalised in 21. In a Java 17 codebase I therefore use switch expressions and `instanceof` patterns freely, but type patterns in `switch` still require preview flags; on 21 I can use the full set.
 
 **In-depth explanation:** Beyond syntax, the semantics are worth knowing: arrow labels eliminate accidental fall-through, and a switch expression over an enum or sealed type that covers all cases needs no `default`, which is what makes new cases a compile error. When the selector can be null, classic `switch` throws `NullPointerException`; Java 21 allows an explicit `case null` so the handling is visible rather than accidental. Record patterns in 21 destructure nested data in one line, which reads far better than a chain of accessors. The migration angle matters in interviews: knowing that a preview feature requires `--enable-preview` and produces class files tied to that exact JDK version explains why teams avoid previews in production.
 
@@ -1010,7 +1010,7 @@ String describe(Object event) {
 ```
 
 **Common follow-ups:**
-- Which parts are preview in 17? Pattern matching for `switch` and record patterns; switch expressions and `instanceof` patterns are standard.
+- Which parts are not standard in 17? Pattern matching for `switch` is preview there; record patterns do not exist at all until their 19 preview. Switch expressions and `instanceof` patterns are standard in 17.
 - What happens with a null selector? Classic `switch` throws; Java 21 lets you write `case null` explicitly.
 - Why avoid preview features in production? They require `--enable-preview`, can change between releases, and tie class files to one JDK version.
 
