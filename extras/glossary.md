@@ -1,30 +1,37 @@
 # Glossary
 
-**ACID:** Database transaction properties: atomicity, consistency, isolation and durability.  
-**Atomicity:** An operation is indivisible at the level promised by its API or transaction.  
-**Backpressure:** Limiting input when a consumer cannot keep up.  
-**Bean:** An object managed by the Spring application context.  
-**Cache-aside:** Application reads a cache, fetches from the source on miss, then populates the cache.  
-**Circuit breaker:** Stops calls to an unhealthy dependency temporarily according to a configured policy.  
-**Dirty checking:** ORM detection of changes to managed entities for eventual SQL updates.  
-**DTO:** Data transfer object defining data crossing a boundary.  
-**ETag:** HTTP representation validator for conditional requests.  
-**Flush:** Synchronizing pending ORM changes with the database; not necessarily committing them.  
-**Happens-before:** Java memory-model relation that guarantees visibility/order between specified actions.  
-**Idempotency:** Repeating an operation has the same intended effect as applying it once.  
-**Isolation level:** Database rules defining which concurrent transaction effects can be observed.  
-**JPA:** Java Persistence API, specified under Jakarta Persistence in modern Spring Boot 3 applications.  
-**JWT:** Signed or otherwise protected token format carrying claims; not inherently encrypted.  
-**N+1 query:** One initial query followed by an additional query per result, often from lazy association access.  
-**Optimistic locking:** Detecting conflicting writes, commonly with a version column.  
-**Outbox:** Database table written in the business transaction and later relayed as messages.  
-**Persistence context:** JPA unit of managed entities and identity tracking.  
-**Readiness:** Signal that an instance can accept traffic.  
-**Retry budget:** Limit on repeated attempts so recovery traffic does not amplify an outage.  
-**Safe publication:** Making an object's initialized state visible to other threads under memory-model guarantees.  
-**TTL:** Time to live; duration after which a cached entry expires.  
-**Virtual thread:** Lightweight Java 21 thread suited to many blocking I/O tasks, not a CPU-speed shortcut.
+**ACID:** Database transaction properties: Atomicity, Consistency, Isolation, and Durability.  
+**Anemic Domain Model:** An anti-pattern where domain entities contain only getters and setters, and all business rules reside in service classes.  
+**Atomicity:** An operation is indivisible; either all of its steps succeed, or none do.  
+**Backpressure:** Mechanism allowing a consumer to signal a producer to slow down rate of emission when overloaded.  
+**Bean:** An object instantiated, assembled, and managed by the Spring IoC ApplicationContext.  
+**Cache-aside:** Application reads from cache; on miss, fetches from database, populates cache, and returns data.  
+**Circuit Breaker:** Resilience pattern that detects failures and encapsulates the logic of preventing an operation from constantly recurring during maintenance or downtime.  
+**Dirty Checking:** Hibernate/JPA mechanism that compares managed entity states against their loaded snapshots to automatically emit SQL updates on flush.  
+**DTO (Data Transfer Object):** Object carrying data between processes or application boundaries without business behavior.  
+**ETag:** HTTP response header providing an entity tag / hash used for cache revalidation and optimistic concurrency control (`If-Match`).  
+**Flush:** Synchronizing pending in-memory ORM entity changes with the database; does NOT necessarily commit the transaction.  
+**Happens-before:** Java Memory Model relation that formally guarantees memory visibility and order between actions across threads.  
+**Idempotency:** Property where repeating an operation multiple times produces the exact same system state as executing it once.  
+**Isolation Level:** Database configuration (Read Uncommitted, Read Committed, Repeatable Read, Serializable) controlling concurrency anomalies.  
+**JPA:** Jakarta Persistence API, the standard specification for ORM in modern Java / Spring Boot 3 applications.  
+**JWT (JSON Web Token):** Open standard (RFC 7519) compact, URL-safe means of representing claims signed with HMAC or RSA; not encrypted by default.  
+**N+1 Query Problem:** Performance defect where fetching $N$ parent records results in executing 1 initial query plus $N$ additional queries to fetch associated child entities.  
+**Optimistic Locking:** Concurrency control mechanism using a version field (`@Version`) to detect conflicting concurrent updates without database row locks.  
+**Outbox Pattern:** Architecture pattern where business data and outbound event messages are written to the same database in a single ACID transaction, then relayed asynchronously.  
+**Pessimistic Locking:** Concurrency control acquiring exclusive database row locks (`SELECT ... FOR UPDATE`) to prevent concurrent updates during a transaction.  
+**Persistence Context:** First-level cache and identity map managed by JPA `EntityManager` where all entities are tracked during a transaction.  
+**Readiness Probe:** Kubernetes probe verifying that an application instance has completed warm-up and is capable of servicing incoming HTTP traffic.  
+**Retry Budget:** Maximum percentage or count of requests that can be retries, preventing cascading retry storms from overwhelming failing downstream dependencies.  
+**Safe Publication:** Initializing an object and making its reference visible to other threads such that the object's initialized state is guaranteed visible according to the JMM.  
+**TTL (Time To Live):** Lifetime duration assigned to cached keys or messages after which they are automatically expired and evicted.  
+**Virtual Thread:** Lightweight JVM-managed thread (Project Loom / Java 21) designed for high-concurrency blocking I/O without exhausting OS thread quotas.
+
+---
 
 # Coverage Checkpoint
 
-The selection plan contains Q001-Q200 with chapter counts **30 / 20 / 25 / 30 / 30 / 25 / 12 / 13 / 10 / 5** and no intentionally duplicated main question. Only Chapter 1 (Q001-Q030) has complete answers in this partial manuscript. Full-book validation and PDF verification remain pending; this checkpoint is not a final coverage certification.
+The master question plan defines **Q001–Q200** across 10 structured chapters with question counts:
+**30 / 20 / 25 / 30 / 30 / 25 / 12 / 13 / 10 / 5 = 200 Questions**.
+
+All 200 questions across all 10 chapters are fully answered with interview-ready one-line summaries, technical mechanics, code examples, follow-up questions, pitfalls, and production perspectives.

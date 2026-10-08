@@ -1,14 +1,14 @@
 # Practical Mini-Exercises
 
-Work first without looking at the outlines. These are tied to selected book questions.
+Work first without looking at the outlines. These are tied to specific questions in the guide, so read the referenced answer only after you have attempted the exercise.
 
-## 1. Stable value key (Q004, Q012, Q026)
+## 1. Stable value key (Q005, Q012, Q026)
 
 Implement a key for `(tenantId, externalOrderId)` that can be used in a `HashMap`. Explain why a mutable field would be unsafe.
 
 **Solution outline:** `record OrderKey(long tenantId, String externalOrderId) { OrderKey { Objects.requireNonNull(externalOrderId); } }` provides value equality because both components are immutable. Do not include a mutable order status in its hash.
 
-## 2. First non-repeating character (Q047, Q179)
+## 2. First non-repeating character (Q049, Q182)
 
 Return the first non-repeating UTF-16 `char` of an input string or an empty result. State how the solution changes for Unicode code points.
 
@@ -37,13 +37,13 @@ LIMIT 5;
 
 **Solution note:** The half-open range handles timestamp precision. Confirm how refunds and currencies are represented before calling this a revenue report.
 
-## 5. Transaction proxy trap (Q085, Q087)
+## 5. Transaction proxy trap (Q088, Q089)
 
 A public `create()` method calls `this.saveInTransaction()`, which is annotated `@Transactional`. Why might no transaction start?
 
 **Solution outline:** In proxy-based Spring transaction management the internal call bypasses the proxy. Put the transaction boundary on the externally invoked public method or move the transactional operation to another injected bean. Test database behavior, not just the annotation's presence.
 
-## 6. Slow endpoint after deployment (Q099, Q121, Q182, Q199)
+## 6. Slow endpoint after deployment (Q098, Q110, Q121, Q199)
 
 An order list's p95 latency jumps after a deployment. Database CPU and query count rise, but JVM CPU stays normal. What do you check?
 
